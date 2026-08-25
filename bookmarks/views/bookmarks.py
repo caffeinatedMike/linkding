@@ -422,6 +422,12 @@ def handle_action(request: HttpRequest, query: QuerySet[Bookmark] = None):
             return share_bookmarks(bookmark_ids, request.user)
         if bulk_action == "bulk_unshare":
             return unshare_bookmarks(bookmark_ids, request.user)
+        if bulk_action == "bulk_enable_web_archive":
+            return enable_bookmarks_web_archive(bookmark_ids, request.user)
+        if bulk_action == "bulk_disable_web_archive":
+            return disable_bookmarks_web_archive(bookmark_ids, request.user)
+        if bulk_action == "bulk_refresh_web_archive":
+            return refresh_bookmarks_web_archive(bookmark_ids, request.user)
         if bulk_action == "bulk_refresh":
             return refresh_bookmarks_metadata(bookmark_ids, request.user)
         if bulk_action == "bulk_snapshot":

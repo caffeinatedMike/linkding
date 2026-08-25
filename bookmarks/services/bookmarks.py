@@ -196,6 +196,33 @@ def unshare_bookmarks(bookmark_ids: list[int | str], current_user: User):
     )
 
 
+def enable_bookmarks_web_archive(bookmark_ids: list[int | str], current_user: User):
+    sanitized_bookmark_ids = _sanitize_id_list(bookmark_ids)
+
+    Bookmark.objects.filter(owner=current_user, id__in=sanitized_bookmark_ids).update(
+        web_archive_opt_in=True, date_modified=timezone.now()
+    )
+
+
+def disable_bookmarks_web_archive(bookmark_ids: list[int | str], current_user: User):
+    sanitized_bookmark_ids = _sanitize_id_list(bookmark_ids)
+
+    Bookmark.objects.filter(owner=current_user, id__in=sanitized_bookmark_ids).update(
+        web_archive_opt_in=False, date_modified=timezone.now()
+    )
+
+
+def refresh_bookmarks_web_archive(bookmark_ids: list[int | str], current_user: User):
+    sanitized_bookmark_ids = _sanitize_id_list(bookmark_ids)
+    # Respect the flag to avoid accidentally sending opt-outs
+    owned_bookmarks = Bookmark.objects.filter(
+        owner=current_user, web_archive_opt_in=True, id__in=sanitized_bookmark_ids
+    )
+
+    for bookmark in owned_bookmarks:
+        tasks.create_web_archive_snapshot(current_user, bookmark, True)
+
+
 def refresh_bookmarks_metadata(bookmark_ids: list[int | str], current_user: User):
     sanitized_bookmark_ids = _sanitize_id_list(bookmark_ids)
     owned_bookmarks = Bookmark.objects.filter(
