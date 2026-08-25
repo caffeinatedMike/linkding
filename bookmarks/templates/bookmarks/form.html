@@ -75,6 +75,15 @@
       {% endformhelp %}
     </div>
   {% endif %}
+  {% if request.user_profile.web_archive_integration_active %}
+    <div class="form-group">
+      {% formfield form.web_archive_opt_in label="Preserve online" has_help=True %}
+      {% formhelp form.web_archive_opt_in %}
+        When enabled this bookmark will be submitted to the Internet Archive (Wayback Machine).
+        The global setting controls whether this per-bookmark choice is respected.
+      {% endformhelp %}
+    </div>
+  {% endif %}
   <div class="divider"></div>
   <div class="form-group d-flex justify-between">
     {% if form.is_auto_close %}
