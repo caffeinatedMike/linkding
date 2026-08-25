@@ -49,10 +49,7 @@ def task(retries=5, retry_delay=15, retry_backoff=4):
 
 def is_web_archive_integration_active(user: User) -> bool:
     background_tasks_enabled = not settings.LD_DISABLE_BACKGROUND_TASKS
-    web_archive_integration_enabled = (
-        user.profile.web_archive_integration
-        == UserProfile.WEB_ARCHIVE_INTEGRATION_ENABLED
-    )
+    web_archive_integration_enabled = user.profile.web_archive_integration_active
 
     return background_tasks_enabled and web_archive_integration_enabled
 
