@@ -153,7 +153,7 @@ class BookmarkItem:
                 "linkding:assets.view", args=[bookmark.latest_snapshot_id]
             )
             self.snapshot_title = "View latest snapshot"
-        else:
+        elif profile.web_archive_integration_active and bookmark.web_archive_opt_in:
             self.snapshot_url = bookmark.web_archive_snapshot_url
             self.snapshot_title = (
                 "View snapshot on the Internet Archive Wayback Machine"
@@ -590,11 +590,14 @@ class BookmarkDetailsContext:
         self.snapshots_enabled = settings.LD_ENABLE_SNAPSHOTS
         self.uploads_enabled = not settings.LD_DISABLE_ASSET_UPLOAD
 
-        self.web_archive_snapshot_url = bookmark.web_archive_snapshot_url
-        if not self.web_archive_snapshot_url:
-            self.web_archive_snapshot_url = generate_fallback_webarchive_url(
-                bookmark.url, bookmark.date_added
-            )
+        if user_profile.web_archive_integration_active and bookmark.web_archive_opt_in:
+            self.web_archive_snapshot_url = bookmark.web_archive_snapshot_url
+            if not self.web_archive_snapshot_url:
+                self.web_archive_snapshot_url = generate_fallback_webarchive_url(
+                    bookmark.url, bookmark.date_added
+                )
+        else:
+            self.web_archive_snapshot_url = None
 
         self.assets = [
             BookmarkAssetItem(asset) for asset in bookmark.bookmarkasset_set.all()
