@@ -37,7 +37,8 @@ def create_bookmark(
     _update_bookmark_tags(bookmark, tag_string, current_user)
     bookmark.save()
     # Create snapshot on web archive
-    tasks.create_web_archive_snapshot(current_user, bookmark, False)
+    if bookmark.web_archive_opt_in:
+        tasks.create_web_archive_snapshot(current_user, bookmark, False)
     # Load favicon
     tasks.load_favicon(current_user, bookmark)
     # Load preview image
@@ -66,7 +67,7 @@ def update_bookmark(bookmark: Bookmark, tag_string, current_user: User):
     # Update preview image
     tasks.load_preview_image(current_user, bookmark)
 
-    if has_url_changed:
+    if has_url_changed and bookmark.web_archive_opt_in:
         # Update web archive snapshot, if URL changed
         tasks.create_web_archive_snapshot(current_user, bookmark, True)
 
