@@ -60,6 +60,7 @@ class Bookmark(models.Model):
     website_title = models.CharField(max_length=512, blank=True, null=True)
     # Obsolete field, kept to not remove column when generating migrations
     website_description = models.TextField(blank=True, null=True)
+    web_archive_opt_in = models.BooleanField(default=False)
     web_archive_snapshot_url = models.CharField(max_length=2048, blank=True)
     favicon_file = models.CharField(max_length=512, blank=True)
     preview_image_file = models.CharField(max_length=512, blank=True)
@@ -375,9 +376,11 @@ class UserProfile(models.Model):
         (BOOKMARK_LINK_TARGET_SELF, "Same page"),
     ]
     WEB_ARCHIVE_INTEGRATION_DISABLED = "disabled"
+    WEB_ARCHIVE_INTEGRATION_OPT_IN = "opt_in"
     WEB_ARCHIVE_INTEGRATION_ENABLED = "enabled"
     WEB_ARCHIVE_INTEGRATION_CHOICES = [
         (WEB_ARCHIVE_INTEGRATION_DISABLED, "Disabled"),
+        (WEB_ARCHIVE_INTEGRATION_OPT_IN, "Opt-in"),
         (WEB_ARCHIVE_INTEGRATION_ENABLED, "Enabled"),
     ]
     TAG_SEARCH_STRICT = "strict"
@@ -460,6 +463,12 @@ class UserProfile(models.Model):
     collapse_side_panel = models.BooleanField(default=False, null=False)
     hide_bundles = models.BooleanField(default=False, null=False)
     legacy_search = models.BooleanField(default=False, null=False)
+
+    @property
+    def web_archive_integration_active(self) -> bool:
+        return (
+            self.web_archive_integration != UserProfile.WEB_ARCHIVE_INTEGRATION_DISABLED
+        )
 
     def save(self, *args, **kwargs):
         if self.custom_css:
