@@ -24,9 +24,12 @@ from bookmarks.services.bookmarks import (
     archive_bookmarks,
     create_html_snapshots,
     delete_bookmarks,
+    disable_bookmarks_web_archive,
+    enable_bookmarks_web_archive,
     mark_bookmarks_as_read,
     mark_bookmarks_as_unread,
     refresh_bookmarks_metadata,
+    refresh_bookmarks_web_archive,
     share_bookmarks,
     tag_bookmarks,
     unarchive_bookmark,
@@ -306,6 +309,9 @@ def update_state(request: HttpRequest, bookmark_id: int | str):
     bookmark.is_archived = request.POST.get("is_archived") == "on"
     bookmark.unread = request.POST.get("unread") == "on"
     bookmark.shared = request.POST.get("shared") == "on"
+    bookmark.web_archive_opt_in = request.POST.get("web_archive_opt_in") == "on"
+    if bookmark.web_archive_opt_in:
+        tasks.create_web_archive_snapshot(request.user, bookmark, True)
     bookmark.save()
 
 
