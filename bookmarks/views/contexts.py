@@ -153,7 +153,10 @@ class BookmarkItem:
                 "linkding:assets.view", args=[bookmark.latest_snapshot_id]
             )
             self.snapshot_title = "View latest snapshot"
-        elif profile.web_archive_integration_active and bookmark.web_archive_opt_in:
+        elif (
+            bookmark.web_archive_opt_in
+            and bookmark.owner.profile.web_archive_integration_active
+        ):
             self.snapshot_url = bookmark.web_archive_snapshot_url
             self.snapshot_title = (
                 "View snapshot on the Internet Archive Wayback Machine"
