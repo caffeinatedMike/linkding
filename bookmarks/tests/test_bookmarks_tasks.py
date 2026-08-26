@@ -77,11 +77,9 @@ class BookmarkTasksTestCase(TestCase, BookmarkFactoryMixin):
         return len(huey.all_results())
 
     def test_create_web_archive_snapshot_should_update_snapshot_url(self):
-        bookmark = self.setup_bookmark()
+        bookmark = self.setup_bookmark(web_archive_opt_in=True)
 
-        tasks.create_web_archive_snapshot(
-            self.get_or_create_test_user(), bookmark, False
-        )
+        tasks.create_web_archive_snapshot(self.user, bookmark, False)
         bookmark.refresh_from_db()
 
         self.mock_save_api.save.assert_called_once()
@@ -98,28 +96,28 @@ class BookmarkTasksTestCase(TestCase, BookmarkFactoryMixin):
         self.mock_save_api.save.assert_not_called()
 
     def test_create_web_archive_snapshot_should_skip_if_snapshot_exists(self):
-        bookmark = self.setup_bookmark(web_archive_snapshot_url="https://example.com")
-
-        self.mock_save_api.create_web_archive_snapshot(
-            self.get_or_create_test_user(), bookmark, False
+        bookmark = self.setup_bookmark(
+            web_archive_opt_in=True, web_archive_snapshot_url="https://example.com"
         )
+
+        self.mock_save_api.create_web_archive_snapshot(self.user, bookmark, False)
 
         self.assertEqual(self.executed_count(), 0)
         self.mock_save_api.assert_not_called()
 
     def test_create_web_archive_snapshot_should_force_update_snapshot(self):
-        bookmark = self.setup_bookmark(web_archive_snapshot_url="https://example.com")
+        bookmark = self.setup_bookmark(
+            web_archive_opt_in=True, web_archive_snapshot_url="https://example.com"
+        )
         self.mock_save_api.archive_url = "https://other.com"
 
-        tasks.create_web_archive_snapshot(
-            self.get_or_create_test_user(), bookmark, True
-        )
+        tasks.create_web_archive_snapshot(self.user, bookmark, True)
         bookmark.refresh_from_db()
 
         self.assertEqual(bookmark.web_archive_snapshot_url, "https://other.com")
 
     def test_create_web_archive_snapshot_should_not_save_stale_bookmark_data(self):
-        bookmark = self.setup_bookmark()
+        bookmark = self.setup_bookmark(web_archive_opt_in=True)
 
         # update bookmark during API call to check that saving
         # the snapshot does not overwrite updated bookmark data
@@ -129,9 +127,7 @@ class BookmarkTasksTestCase(TestCase, BookmarkFactoryMixin):
 
         self.mock_save_api.save.side_effect = mock_save_impl
 
-        tasks.create_web_archive_snapshot(
-            self.get_or_create_test_user(), bookmark, False
-        )
+        tasks.create_web_archive_snapshot(self.user, bookmark, False)
         bookmark.refresh_from_db()
 
         self.assertEqual(bookmark.title, "Updated title")
@@ -144,11 +140,9 @@ class BookmarkTasksTestCase(TestCase, BookmarkFactoryMixin):
     def test_create_web_archive_snapshot_should_not_run_when_background_tasks_are_disabled(
         self,
     ):
-        bookmark = self.setup_bookmark()
+        bookmark = self.setup_bookmark(web_archive_opt_in=True)
 
-        tasks.create_web_archive_snapshot(
-            self.get_or_create_test_user(), bookmark, False
-        )
+        tasks.create_web_archive_snapshot(self.user, bookmark, False)
         self.assertEqual(self.executed_count(), 0)
 
     def test_create_web_archive_snapshot_should_not_run_when_web_archive_integration_is_disabled(
@@ -159,10 +153,8 @@ class BookmarkTasksTestCase(TestCase, BookmarkFactoryMixin):
         )
         self.user.profile.save()
 
-        bookmark = self.setup_bookmark()
-        tasks.create_web_archive_snapshot(
-            self.get_or_create_test_user(), bookmark, False
-        )
+        bookmark = self.setup_bookmark(web_archive_opt_in=True)
+        tasks.create_web_archive_snapshot(self.user, bookmark, False)
 
         self.assertEqual(self.executed_count(), 0)
 

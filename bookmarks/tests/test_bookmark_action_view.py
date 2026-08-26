@@ -281,6 +281,7 @@ class BookmarkActionViewTestCase(
                 "is_archived": "on",
                 "unread": "on",
                 "shared": "on",
+                "web_archive_opt_in": "on",
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -289,6 +290,7 @@ class BookmarkActionViewTestCase(
         self.assertTrue(bookmark.unread)
         self.assertTrue(bookmark.is_archived)
         self.assertTrue(bookmark.shared)
+        self.assertTrue(bookmark.web_archive_opt_in)
 
     def test_can_only_update_own_bookmark_state(self):
         other_user = self.setup_user()
@@ -301,6 +303,7 @@ class BookmarkActionViewTestCase(
                 "is_archived": "on",
                 "unread": "on",
                 "shared": "on",
+                "web_archive_opt_in": "on",
             },
         )
         self.assertEqual(response.status_code, 404)
@@ -309,6 +312,7 @@ class BookmarkActionViewTestCase(
         self.assertFalse(bookmark.unread)
         self.assertFalse(bookmark.is_archived)
         self.assertFalse(bookmark.shared)
+        self.assertFalse(bookmark.web_archive_opt_in)
 
     def test_bulk_archive(self):
         bookmark1 = self.setup_bookmark()
