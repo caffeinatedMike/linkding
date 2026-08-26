@@ -290,7 +290,8 @@ class BookmarkActionViewTestCase(
         self.assertTrue(bookmark.unread)
         self.assertTrue(bookmark.is_archived)
         self.assertTrue(bookmark.shared)
-        self.assertTrue(bookmark.web_archive_opt_in)
+        # since web archive is disabled, flag should remain unchanged
+        self.assertFalse(bookmark.web_archive_opt_in)
 
     def test_can_only_update_own_bookmark_state(self):
         other_user = self.setup_user()

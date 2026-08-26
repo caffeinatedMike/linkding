@@ -309,8 +309,11 @@ def update_state(request: HttpRequest, bookmark_id: int | str):
     bookmark.is_archived = request.POST.get("is_archived") == "on"
     bookmark.unread = request.POST.get("unread") == "on"
     bookmark.shared = request.POST.get("shared") == "on"
-    bookmark.web_archive_opt_in = request.POST.get("web_archive_opt_in") == "on"
-    tasks.create_web_archive_snapshot(request.user, bookmark, True)
+    if request.user_profile.web_archive_integration_active:
+        # we don't want the flag to be flipped to False if the feature is disabled
+        # preserve pre-disabled state in the event user re-enabled feature later
+        bookmark.web_archive_opt_in = request.POST.get("web_archive_opt_in") == "on"
+        tasks.create_web_archive_snapshot(request.user, bookmark, True)
     bookmark.save()
 
 
