@@ -23,7 +23,7 @@ class BookmarkActionViewTestCase(
         user = self.get_or_create_test_user()
         self.client.force_login(user)
 
-    def assertBookmarksAreUnmodified(self, bookmarks: [Bookmark]):
+    def assertBookmarksAreUnmodified(self, bookmarks: list[Bookmark]):
         self.assertEqual(len(bookmarks), Bookmark.objects.count())
 
         for bookmark in bookmarks:
@@ -765,6 +765,150 @@ class BookmarkActionViewTestCase(
         self.assertTrue(Bookmark.objects.get(id=bookmark2.id).shared)
         self.assertTrue(Bookmark.objects.get(id=bookmark3.id).shared)
 
+    def test_bulk_enable_web_archive(self):
+        bookmark1 = self.setup_bookmark(web_archive_opt_in=False)
+        bookmark2 = self.setup_bookmark(web_archive_opt_in=False)
+        bookmark3 = self.setup_bookmark(web_archive_opt_in=False)
+
+        self.client.post(
+            reverse("linkding:bookmarks.index.action"),
+            {
+                "bulk_action": ["bulk_enable_web_archive"],
+                "bulk_execute": [""],
+                "bookmark_id": [
+                    str(bookmark1.id),
+                    str(bookmark2.id),
+                    str(bookmark3.id),
+                ],
+            },
+        )
+
+        self.assertTrue(Bookmark.objects.get(id=bookmark1.id).web_archive_opt_in)
+        self.assertTrue(Bookmark.objects.get(id=bookmark2.id).web_archive_opt_in)
+        self.assertTrue(Bookmark.objects.get(id=bookmark3.id).web_archive_opt_in)
+
+    def test_can_only_bulk_enable_web_archive_for_own_bookmarks(self):
+        other_user = User.objects.create_user(
+            "otheruser", "otheruser@example.com", "password123"
+        )
+        bookmark1 = self.setup_bookmark(web_archive_opt_in=False, user=other_user)
+        bookmark2 = self.setup_bookmark(web_archive_opt_in=False, user=other_user)
+        bookmark3 = self.setup_bookmark(web_archive_opt_in=False, user=other_user)
+
+        self.client.post(
+            reverse("linkding:bookmarks.index.action"),
+            {
+                "bulk_action": ["bulk_enable_web_archive"],
+                "bulk_execute": [""],
+                "bookmark_id": [
+                    str(bookmark1.id),
+                    str(bookmark2.id),
+                    str(bookmark3.id),
+                ],
+            },
+        )
+
+        self.assertFalse(Bookmark.objects.get(id=bookmark1.id).web_archive_opt_in)
+        self.assertFalse(Bookmark.objects.get(id=bookmark2.id).web_archive_opt_in)
+        self.assertFalse(Bookmark.objects.get(id=bookmark3.id).web_archive_opt_in)
+
+    def test_bulk_disable_web_archive(self):
+        bookmark1 = self.setup_bookmark(web_archive_opt_in=True)
+        bookmark2 = self.setup_bookmark(web_archive_opt_in=True)
+        bookmark3 = self.setup_bookmark(web_archive_opt_in=True)
+
+        self.client.post(
+            reverse("linkding:bookmarks.index.action"),
+            {
+                "bulk_action": ["bulk_disable_web_archive"],
+                "bulk_execute": [""],
+                "bookmark_id": [
+                    str(bookmark1.id),
+                    str(bookmark2.id),
+                    str(bookmark3.id),
+                ],
+            },
+        )
+
+        self.assertFalse(Bookmark.objects.get(id=bookmark1.id).web_archive_opt_in)
+        self.assertFalse(Bookmark.objects.get(id=bookmark2.id).web_archive_opt_in)
+        self.assertFalse(Bookmark.objects.get(id=bookmark3.id).web_archive_opt_in)
+
+    def test_can_only_bulk_disable_web_archive_for_own_bookmarks(self):
+        other_user = User.objects.create_user(
+            "otheruser", "otheruser@example.com", "password123"
+        )
+        bookmark1 = self.setup_bookmark(web_archive_opt_in=True, user=other_user)
+        bookmark2 = self.setup_bookmark(web_archive_opt_in=True, user=other_user)
+        bookmark3 = self.setup_bookmark(web_archive_opt_in=True, user=other_user)
+
+        self.client.post(
+            reverse("linkding:bookmarks.index.action"),
+            {
+                "bulk_action": ["bulk_disable_web_archive"],
+                "bulk_execute": [""],
+                "bookmark_id": [
+                    str(bookmark1.id),
+                    str(bookmark2.id),
+                    str(bookmark3.id),
+                ],
+            },
+        )
+
+        self.assertTrue(Bookmark.objects.get(id=bookmark1.id).web_archive_opt_in)
+        self.assertTrue(Bookmark.objects.get(id=bookmark2.id).web_archive_opt_in)
+        self.assertTrue(Bookmark.objects.get(id=bookmark3.id).web_archive_opt_in)
+
+    def test_bulk_refresh_web_archive_respects_opt_in_flag(self):
+        user = self.get_or_create_test_user()
+        user.profile.web_archive_integration = "enabled"
+        user.profile.save()
+
+        opt_ins = self.setup_numbered_bookmarks(3, web_archive_opt_in=True)
+        opt_outs = self.setup_numbered_bookmarks(2, web_archive_opt_in=False)
+        bookmarks = opt_ins + opt_outs
+
+        with patch.object(
+            tasks, "_create_web_archive_snapshot_task"
+        ) as mock_create_web_archive_snapshot_task:
+            self.client.post(
+                reverse("linkding:bookmarks.index.action"),
+                {
+                    "bulk_action": ["bulk_refresh_web_archive"],
+                    "bulk_execute": [""],
+                    "bookmark_id": [str(b.id) for b in bookmarks],
+                },
+            )
+
+            self.assertEqual(
+                mock_create_web_archive_snapshot_task.call_count, len(opt_ins)
+            )
+            for bookmark in opt_ins:
+                mock_create_web_archive_snapshot_task.assert_any_call(bookmark.id, True)
+
+    def test_can_only_refresh_web_archive_for_own_bookmarks(self):
+        user = self.get_or_create_test_user()
+        user.profile.web_archive_integration = "enabled"
+        user.profile.save()
+
+        other_user = self.setup_user(web_archive_integration="enabled")
+        bookmarks = self.setup_numbered_bookmarks(
+            3, web_archive_opt_in=True, user=other_user
+        )
+
+        with patch.object(
+            tasks, "_create_web_archive_snapshot_task"
+        ) as mock_create_web_archive_snapshot_task:
+            self.client.post(
+                reverse("linkding:bookmarks.index.action"),
+                {
+                    "bulk_action": ["bulk_refresh_web_archive"],
+                    "bulk_execute": [""],
+                    "bookmark_id": [str(b.id) for b in bookmarks],
+                },
+            )
+            mock_create_web_archive_snapshot_task.assert_not_called()
+
     def test_bulk_select_across(self):
         bookmark1 = self.setup_bookmark()
         bookmark2 = self.setup_bookmark()
@@ -1012,9 +1156,8 @@ class BookmarkActionViewTestCase(
 
     def bookmark_update_fixture(self):
         user = self.get_or_create_test_user()
-        profile = user.profile
-        profile.enable_sharing = True
-        profile.save()
+        user.profile.enable_sharing = True
+        user.profile.save()
 
         return {
             "active": self.setup_numbered_bookmarks(3),
