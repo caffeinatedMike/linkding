@@ -49,13 +49,12 @@ def task(retries=5, retry_delay=15, retry_backoff=4):
 
 def is_web_archive_integration_active(user: User) -> bool:
     background_tasks_enabled = not settings.LD_DISABLE_BACKGROUND_TASKS
-    web_archive_integration_enabled = user.profile.web_archive_integration_active
 
-    return background_tasks_enabled and web_archive_integration_enabled
+    return background_tasks_enabled and user.profile.web_archive_integration_active
 
 
 def create_web_archive_snapshot(user: User, bookmark: Bookmark, force_update: bool):
-    if is_web_archive_integration_active(user):
+    if is_web_archive_integration_active(user) and bookmark.web_archive_opt_in:
         _create_web_archive_snapshot_task(bookmark.id, force_update)
 
 

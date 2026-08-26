@@ -310,8 +310,7 @@ def update_state(request: HttpRequest, bookmark_id: int | str):
     bookmark.unread = request.POST.get("unread") == "on"
     bookmark.shared = request.POST.get("shared") == "on"
     bookmark.web_archive_opt_in = request.POST.get("web_archive_opt_in") == "on"
-    if bookmark.web_archive_opt_in:
-        tasks.create_web_archive_snapshot(request.user, bookmark, True)
+    tasks.create_web_archive_snapshot(request.user, bookmark, True)
     bookmark.save()
 
 
