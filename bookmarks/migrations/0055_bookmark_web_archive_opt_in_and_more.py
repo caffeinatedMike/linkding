@@ -8,14 +8,16 @@ def forwards(apps, schema_editor):
     Bookmark = apps.get_model("bookmarks", "Bookmark")
     # Use the profile field value string directly to avoid relying on model constants
     Bookmark.objects.filter(owner__profile__web_archive_integration="enabled").update(
-        web_archive_opt_in=True
+        web_archive=True
     )
 
 
 def reverse(apps, schema_editor):
-    Bookmark = apps.get_model("bookmarks", "Bookmark")
-    # On rollback, clear the opt-in flag for all bookmarks
-    Bookmark.objects.update(web_archive_opt_in=False)
+    UserProfile = apps.get_model("bookmarks", "UserProfile")
+    # Revert opt_in mode back to enabled (the previous "archive everything" mode)
+    UserProfile.objects.filter(web_archive_integration="opt_in").update(
+        web_archive_integration="enabled"
+    )
 
 
 class Migration(migrations.Migration):
@@ -26,7 +28,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="bookmark",
-            name="web_archive_opt_in",
+            name="web_archive",
             field=models.BooleanField(default=False),
         ),
         migrations.RunPython(forwards, reverse),
