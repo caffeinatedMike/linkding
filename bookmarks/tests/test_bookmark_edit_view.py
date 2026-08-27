@@ -306,6 +306,65 @@ class BookmarkEditViewTestCase(TestCase, BookmarkFactoryMixin):
             count=1,
         )
 
+    def test_should_respect_web_archive_integration_profile_setting(self):
+        bookmark = self.setup_bookmark()
+
+        # profile setting defaults to disabled
+        response = self.client.get(
+            reverse("linkding:bookmarks.edit", args=[bookmark.id])
+        )
+        html = response.content.decode()
+
+        self.assertInHTML(
+            """
+            <div class="form-checkbox">
+                <input type="checkbox" name="web_archive" aria-describedby="id_web_archive_help" id="id_web_archive">
+                <i class="form-icon"></i>
+                <label for="id_web_archive">Preserve online</label>
+            </div>
+            """,
+            html,
+            count=0,
+        )
+
+        self.user.profile.web_archive_integration = "opt_in"
+        self.user.profile.save()
+        response = self.client.get(
+            reverse("linkding:bookmarks.edit", args=[bookmark.id])
+        )
+        html = response.content.decode()
+
+        self.assertInHTML(
+            """
+            <div class="form-checkbox">
+                <input type="checkbox" name="web_archive" aria-describedby="id_web_archive_help" id="id_web_archive">
+                <i class="form-icon"></i>
+                <label for="id_web_archive">Preserve online</label>
+            </div>
+            """,
+            html,
+            count=1,
+        )
+
+        self.user.profile.web_archive_integration = "enabled"
+        self.user.profile.save()
+        response = self.client.get(
+            reverse("linkding:bookmarks.edit", args=[bookmark.id])
+        )
+        html = response.content.decode()
+
+        self.assertInHTML(
+            """
+            <div class="form-checkbox">
+                <input type="checkbox" name="web_archive" aria-describedby="id_web_archive_help" id="id_web_archive">
+                <i class="form-icon"></i>
+                <label for="id_web_archive">Preserve online</label>
+            </div>
+            """,
+            html,
+            count=1,
+        )
+
     def test_should_hide_notes_if_there_are_no_notes(self):
         bookmark = self.setup_bookmark()
         response = self.client.get(

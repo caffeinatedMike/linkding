@@ -366,6 +366,33 @@ class BookmarkArchivedViewTestCase(
             html,
         )
 
+    def test_allowed_bulk_actions_with_web_archive_enabled(self):
+        user_profile = self.user.profile
+        user_profile.web_archive_integration = "enabled"
+        user_profile.save()
+
+        url = reverse("linkding:bookmarks.archived")
+        response = self.client.get(url)
+        html = response.content.decode()
+
+        self.assertInHTML(
+            """
+          <select name="bulk_action" class="form-select select-sm">
+            <option value="bulk_unarchive">Unarchive</option>
+            <option value="bulk_delete">Delete</option>
+            <option value="bulk_tag">Add tags</option>
+            <option value="bulk_untag">Remove tags</option>
+            <option value="bulk_read">Mark as read</option>
+            <option value="bulk_unread">Mark as unread</option>
+            <option value="bulk_enable_web_archive">Enable web archive</option>
+            <option value="bulk_disable_web_archive">Disable web archive</option>
+            <option value="bulk_refresh_web_archive">Refresh web archive</option>
+            <option value="bulk_refresh">Refresh from website</option>
+          </select>
+        """,
+            html,
+        )
+
     @override_settings(LD_ENABLE_SNAPSHOTS=True)
     def test_allowed_bulk_actions_with_sharing_and_html_snapshot_enabled(self):
         user_profile = self.user.profile

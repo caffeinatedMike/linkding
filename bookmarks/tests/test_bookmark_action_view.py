@@ -893,9 +893,7 @@ class BookmarkActionViewTestCase(
         user.profile.save()
 
         other_user = self.setup_user(web_archive_integration="enabled")
-        bookmarks = self.setup_numbered_bookmarks(
-            3, web_archive=True, user=other_user
-        )
+        bookmarks = self.setup_numbered_bookmarks(3, web_archive=True, user=other_user)
 
         with patch.object(
             tasks, "_create_web_archive_snapshot_task"

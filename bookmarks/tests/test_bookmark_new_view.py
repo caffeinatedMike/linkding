@@ -306,3 +306,40 @@ class BookmarkNewViewTestCase(TestCase, BookmarkFactoryMixin):
             '<input type="checkbox" name="shared" id="id_shared" checked="" aria-describedby="id_shared_help">',
             html,
         )
+
+    def test_should_not_show_web_archive_when_disabled_in_profile(self):
+        self.user.profile.web_archive_integration = "disabled"
+        self.user.profile.save()
+
+        response = self.client.get(reverse("linkding:bookmarks.new"))
+        html = response.content.decode()
+
+        self.assertInHTML(
+            '<input type="checkbox" name="web_archive" id="id_web_archive" aria-describedby="id_web_archive_help">',
+            html,
+            count=0,
+        )
+
+    def test_should_check_web_archive_when_enabled_in_profile(self):
+        self.user.profile.web_archive_integration = "enabled"
+        self.user.profile.save()
+
+        response = self.client.get(reverse("linkding:bookmarks.new"))
+        html = response.content.decode()
+
+        self.assertInHTML(
+            '<input type="checkbox" name="web_archive" id="id_web_archive" checked="" aria-describedby="id_web_archive_help">',
+            html,
+        )
+
+    def test_should_not_check_web_archive_when_opt_in_selected_in_profile(self):
+        self.user.profile.web_archive_integration = "opt_in"
+        self.user.profile.save()
+
+        response = self.client.get(reverse("linkding:bookmarks.new"))
+        html = response.content.decode()
+
+        self.assertInHTML(
+            '<input type="checkbox" name="web_archive" id="id_web_archive" aria-describedby="id_web_archive_help">',
+            html,
+        )
