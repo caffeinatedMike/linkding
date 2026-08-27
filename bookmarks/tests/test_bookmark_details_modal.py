@@ -229,7 +229,7 @@ class BookmarkDetailsModalTestCase(TestCase, BookmarkFactoryMixin, HtmlTestMixin
         profile.save()
 
         bookmark = self.setup_bookmark(
-            web_archive_opt_in=True, web_archive_snapshot_url="https://example.com/"
+            web_archive=True, web_archive_snapshot_url="https://example.com/"
         )
         soup = self.get_index_details_modal(bookmark)
         link = self.find_weblink(soup, bookmark.web_archive_snapshot_url)
@@ -239,7 +239,7 @@ class BookmarkDetailsModalTestCase(TestCase, BookmarkFactoryMixin, HtmlTestMixin
 
         # favicons disabled
         bookmark = self.setup_bookmark(
-            web_archive_opt_in=True,
+            web_archive=True,
             web_archive_snapshot_url="https://example.com/",
             favicon_file="example.png",
         )
@@ -253,7 +253,7 @@ class BookmarkDetailsModalTestCase(TestCase, BookmarkFactoryMixin, HtmlTestMixin
         profile.save()
 
         bookmark = self.setup_bookmark(
-            web_archive_opt_in=True,
+            web_archive=True,
             web_archive_snapshot_url="https://example.com/",
             favicon_file="",
         )
@@ -264,7 +264,7 @@ class BookmarkDetailsModalTestCase(TestCase, BookmarkFactoryMixin, HtmlTestMixin
 
         # favicons enabled, favicon present
         bookmark = self.setup_bookmark(
-            web_archive_opt_in=True,
+            web_archive=True,
             web_archive_snapshot_url="https://example.com/",
             favicon_file="example.png",
         )
@@ -281,7 +281,7 @@ class BookmarkDetailsModalTestCase(TestCase, BookmarkFactoryMixin, HtmlTestMixin
 
         date_added = timezone.datetime(2023, 8, 11, 21, 45, 11, tzinfo=datetime.UTC)
         bookmark = self.setup_bookmark(
-            web_archive_opt_in=True, url="https://example.com/", added=date_added
+            web_archive=True, url="https://example.com/", added=date_added
         )
         fallback_web_archive_url = (
             "https://web.archive.org/web/20230811214511/https://example.com/"
@@ -301,7 +301,7 @@ class BookmarkDetailsModalTestCase(TestCase, BookmarkFactoryMixin, HtmlTestMixin
         profile.save()
 
         bookmark = self.setup_bookmark(
-            web_archive_opt_in=True, web_archive_snapshot_url="https://example.com/"
+            web_archive=True, web_archive_snapshot_url="https://example.com/"
         )
 
         soup = self.get_index_details_modal(bookmark)

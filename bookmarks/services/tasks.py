@@ -54,7 +54,7 @@ def is_web_archive_integration_active(user: User) -> bool:
 
 
 def create_web_archive_snapshot(user: User, bookmark: Bookmark, force_update: bool):
-    if is_web_archive_integration_active(user) and bookmark.web_archive_opt_in:
+    if is_web_archive_integration_active(user) and bookmark.web_archive:
         _create_web_archive_snapshot_task(bookmark.id, force_update)
 
 

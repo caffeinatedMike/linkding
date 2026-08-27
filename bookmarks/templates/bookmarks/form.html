@@ -77,8 +77,8 @@
   {% endif %}
   {% if request.user_profile.web_archive_integration_active %}
     <div class="form-group">
-      {% formfield form.web_archive_opt_in label="Preserve online" has_help=True %}
-      {% formhelp form.web_archive_opt_in %}
+      {% formfield form.web_archive label="Preserve online" has_help=True %}
+      {% formhelp form.web_archive %}
         When enabled this bookmark will be submitted to the Internet Archive (Wayback Machine).
         The global setting controls whether this per-bookmark choice is respected.
       {% endformhelp %}

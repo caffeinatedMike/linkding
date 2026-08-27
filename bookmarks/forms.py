@@ -38,7 +38,7 @@ class BookmarkForm(forms.ModelForm):
     notes = forms.CharField(required=False, widget=FormTextarea)
     unread = forms.BooleanField(required=False, widget=FormCheckbox)
     shared = forms.BooleanField(required=False, widget=FormCheckbox)
-    web_archive_opt_in = forms.BooleanField(required=False, widget=FormCheckbox)
+    web_archive = forms.BooleanField(required=False, widget=FormCheckbox)
     # Hidden field that determines whether to close window/tab after saving the bookmark
     auto_close = forms.CharField(required=False, widget=forms.HiddenInput)
 
@@ -52,7 +52,7 @@ class BookmarkForm(forms.ModelForm):
             "notes",
             "unread",
             "shared",
-            "web_archive_opt_in",
+            "web_archive",
             "auto_close",
         ]
 
@@ -70,7 +70,7 @@ class BookmarkForm(forms.ModelForm):
                 "auto_close": "auto_close" in request.GET,
                 "unread": request.user_profile.default_mark_unread,
                 "shared": request.user_profile.default_mark_shared,
-                "web_archive_opt_in": request.user_profile.web_archive_integration
+                "web_archive": request.user_profile.web_archive_integration
                 == UserProfile.WEB_ARCHIVE_INTEGRATION_ENABLED,
             }
         if instance is not None and request.method == "GET":

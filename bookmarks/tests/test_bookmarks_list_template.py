@@ -283,10 +283,10 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
     def setup_date_format_test(
         self,
         date_display_setting: str,
-        web_archive_opt_in: bool = False,
+        web_archive: bool = False,
         web_archive_url: str = "",
     ):
-        bookmark = self.setup_bookmark(web_archive_opt_in=web_archive_opt_in)
+        bookmark = self.setup_bookmark(web_archive=web_archive)
         bookmark.date_added = timezone.now() - datetime.timedelta(days=8)
         bookmark.web_archive_snapshot_url = web_archive_url
         bookmark.save()
@@ -537,7 +537,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
 
         date_added = timezone.datetime(2023, 8, 11, 21, 45, 11, tzinfo=datetime.UTC)
         bookmark = self.setup_bookmark(
-            url="https://example.com/article", added=date_added, web_archive_opt_in=True
+            url="https://example.com/article", added=date_added, web_archive=True
         )
 
         html = self.render_template()
@@ -569,7 +569,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
         profile = self.get_or_create_test_user().profile
         profile.web_archive_integration = "enabled"
         profile.save()
-        bookmark = self.setup_bookmark(web_archive_opt_in=True)
+        bookmark = self.setup_bookmark(web_archive=True)
         bookmark.date_added = timezone.now() - datetime.timedelta(days=8)
         bookmark.web_archive_snapshot_url = "https://example.com"
         bookmark.save()
@@ -586,7 +586,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
         profile.bookmark_link_target = UserProfile.BOOKMARK_LINK_TARGET_SELF
         profile.save()
 
-        bookmark = self.setup_bookmark(web_archive_opt_in=True)
+        bookmark = self.setup_bookmark(web_archive=True)
         bookmark.date_added = timezone.now() - datetime.timedelta(days=8)
         bookmark.web_archive_snapshot_url = "https://example.com"
         bookmark.save()
@@ -1051,7 +1051,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
         profile.web_archive_integration = "enabled"
         profile.save()
 
-        bookmark = self.setup_bookmark(web_archive_opt_in=True)
+        bookmark = self.setup_bookmark(web_archive=True)
         bookmark.date_added = timezone.now() - datetime.timedelta(days=8)
         bookmark.web_archive_snapshot_url = (
             "https://web.archive.org/web/20230531200136/https://example.com"
@@ -1157,7 +1157,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
         profile.web_archive_integration = "enabled"
         profile.save()
 
-        bookmark = self.setup_bookmark(web_archive_opt_in=True)
+        bookmark = self.setup_bookmark(web_archive=True)
         bookmark.date_added = timezone.now() - datetime.timedelta(days=8)
         bookmark.web_archive_snapshot_url = "https://example.com"
         bookmark.save()

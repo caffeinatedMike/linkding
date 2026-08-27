@@ -154,7 +154,7 @@ class BookmarkItem:
             )
             self.snapshot_title = "View latest snapshot"
         elif (
-            bookmark.web_archive_opt_in
+            bookmark.web_archive
             and bookmark.owner.profile.web_archive_integration_active
         ):
             self.snapshot_url = bookmark.web_archive_snapshot_url
@@ -593,7 +593,7 @@ class BookmarkDetailsContext:
         self.snapshots_enabled = settings.LD_ENABLE_SNAPSHOTS
         self.uploads_enabled = not settings.LD_DISABLE_ASSET_UPLOAD
 
-        if user_profile.web_archive_integration_active and bookmark.web_archive_opt_in:
+        if user_profile.web_archive_integration_active and bookmark.web_archive:
             self.web_archive_snapshot_url = bookmark.web_archive_snapshot_url
             if not self.web_archive_snapshot_url:
                 self.web_archive_snapshot_url = generate_fallback_webarchive_url(

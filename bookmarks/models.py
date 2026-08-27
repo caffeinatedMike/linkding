@@ -60,7 +60,7 @@ class Bookmark(models.Model):
     website_title = models.CharField(max_length=512, blank=True, null=True)
     # Obsolete field, kept to not remove column when generating migrations
     website_description = models.TextField(blank=True, null=True)
-    web_archive_opt_in = models.BooleanField(default=False)
+    web_archive = models.BooleanField(default=False)
     web_archive_snapshot_url = models.CharField(max_length=2048, blank=True)
     favicon_file = models.CharField(max_length=512, blank=True)
     preview_image_file = models.CharField(max_length=512, blank=True)

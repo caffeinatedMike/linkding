@@ -281,7 +281,7 @@ class BookmarkActionViewTestCase(
                 "is_archived": "on",
                 "unread": "on",
                 "shared": "on",
-                "web_archive_opt_in": "on",
+                "web_archive": "on",
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -291,7 +291,7 @@ class BookmarkActionViewTestCase(
         self.assertTrue(bookmark.is_archived)
         self.assertTrue(bookmark.shared)
         # since web archive is disabled, flag should remain unchanged
-        self.assertFalse(bookmark.web_archive_opt_in)
+        self.assertFalse(bookmark.web_archive)
 
     def test_can_only_update_own_bookmark_state(self):
         other_user = self.setup_user()
@@ -304,7 +304,7 @@ class BookmarkActionViewTestCase(
                 "is_archived": "on",
                 "unread": "on",
                 "shared": "on",
-                "web_archive_opt_in": "on",
+                "web_archive": "on",
             },
         )
         self.assertEqual(response.status_code, 404)
@@ -313,7 +313,7 @@ class BookmarkActionViewTestCase(
         self.assertFalse(bookmark.unread)
         self.assertFalse(bookmark.is_archived)
         self.assertFalse(bookmark.shared)
-        self.assertFalse(bookmark.web_archive_opt_in)
+        self.assertFalse(bookmark.web_archive)
 
     def test_bulk_archive(self):
         bookmark1 = self.setup_bookmark()
@@ -767,9 +767,9 @@ class BookmarkActionViewTestCase(
         self.assertTrue(Bookmark.objects.get(id=bookmark3.id).shared)
 
     def test_bulk_enable_web_archive(self):
-        bookmark1 = self.setup_bookmark(web_archive_opt_in=False)
-        bookmark2 = self.setup_bookmark(web_archive_opt_in=False)
-        bookmark3 = self.setup_bookmark(web_archive_opt_in=False)
+        bookmark1 = self.setup_bookmark(web_archive=False)
+        bookmark2 = self.setup_bookmark(web_archive=False)
+        bookmark3 = self.setup_bookmark(web_archive=False)
 
         self.client.post(
             reverse("linkding:bookmarks.index.action"),
@@ -784,17 +784,17 @@ class BookmarkActionViewTestCase(
             },
         )
 
-        self.assertTrue(Bookmark.objects.get(id=bookmark1.id).web_archive_opt_in)
-        self.assertTrue(Bookmark.objects.get(id=bookmark2.id).web_archive_opt_in)
-        self.assertTrue(Bookmark.objects.get(id=bookmark3.id).web_archive_opt_in)
+        self.assertTrue(Bookmark.objects.get(id=bookmark1.id).web_archive)
+        self.assertTrue(Bookmark.objects.get(id=bookmark2.id).web_archive)
+        self.assertTrue(Bookmark.objects.get(id=bookmark3.id).web_archive)
 
     def test_can_only_bulk_enable_web_archive_for_own_bookmarks(self):
         other_user = User.objects.create_user(
             "otheruser", "otheruser@example.com", "password123"
         )
-        bookmark1 = self.setup_bookmark(web_archive_opt_in=False, user=other_user)
-        bookmark2 = self.setup_bookmark(web_archive_opt_in=False, user=other_user)
-        bookmark3 = self.setup_bookmark(web_archive_opt_in=False, user=other_user)
+        bookmark1 = self.setup_bookmark(web_archive=False, user=other_user)
+        bookmark2 = self.setup_bookmark(web_archive=False, user=other_user)
+        bookmark3 = self.setup_bookmark(web_archive=False, user=other_user)
 
         self.client.post(
             reverse("linkding:bookmarks.index.action"),
@@ -809,14 +809,14 @@ class BookmarkActionViewTestCase(
             },
         )
 
-        self.assertFalse(Bookmark.objects.get(id=bookmark1.id).web_archive_opt_in)
-        self.assertFalse(Bookmark.objects.get(id=bookmark2.id).web_archive_opt_in)
-        self.assertFalse(Bookmark.objects.get(id=bookmark3.id).web_archive_opt_in)
+        self.assertFalse(Bookmark.objects.get(id=bookmark1.id).web_archive)
+        self.assertFalse(Bookmark.objects.get(id=bookmark2.id).web_archive)
+        self.assertFalse(Bookmark.objects.get(id=bookmark3.id).web_archive)
 
     def test_bulk_disable_web_archive(self):
-        bookmark1 = self.setup_bookmark(web_archive_opt_in=True)
-        bookmark2 = self.setup_bookmark(web_archive_opt_in=True)
-        bookmark3 = self.setup_bookmark(web_archive_opt_in=True)
+        bookmark1 = self.setup_bookmark(web_archive=True)
+        bookmark2 = self.setup_bookmark(web_archive=True)
+        bookmark3 = self.setup_bookmark(web_archive=True)
 
         self.client.post(
             reverse("linkding:bookmarks.index.action"),
@@ -831,17 +831,17 @@ class BookmarkActionViewTestCase(
             },
         )
 
-        self.assertFalse(Bookmark.objects.get(id=bookmark1.id).web_archive_opt_in)
-        self.assertFalse(Bookmark.objects.get(id=bookmark2.id).web_archive_opt_in)
-        self.assertFalse(Bookmark.objects.get(id=bookmark3.id).web_archive_opt_in)
+        self.assertFalse(Bookmark.objects.get(id=bookmark1.id).web_archive)
+        self.assertFalse(Bookmark.objects.get(id=bookmark2.id).web_archive)
+        self.assertFalse(Bookmark.objects.get(id=bookmark3.id).web_archive)
 
     def test_can_only_bulk_disable_web_archive_for_own_bookmarks(self):
         other_user = User.objects.create_user(
             "otheruser", "otheruser@example.com", "password123"
         )
-        bookmark1 = self.setup_bookmark(web_archive_opt_in=True, user=other_user)
-        bookmark2 = self.setup_bookmark(web_archive_opt_in=True, user=other_user)
-        bookmark3 = self.setup_bookmark(web_archive_opt_in=True, user=other_user)
+        bookmark1 = self.setup_bookmark(web_archive=True, user=other_user)
+        bookmark2 = self.setup_bookmark(web_archive=True, user=other_user)
+        bookmark3 = self.setup_bookmark(web_archive=True, user=other_user)
 
         self.client.post(
             reverse("linkding:bookmarks.index.action"),
@@ -856,17 +856,17 @@ class BookmarkActionViewTestCase(
             },
         )
 
-        self.assertTrue(Bookmark.objects.get(id=bookmark1.id).web_archive_opt_in)
-        self.assertTrue(Bookmark.objects.get(id=bookmark2.id).web_archive_opt_in)
-        self.assertTrue(Bookmark.objects.get(id=bookmark3.id).web_archive_opt_in)
+        self.assertTrue(Bookmark.objects.get(id=bookmark1.id).web_archive)
+        self.assertTrue(Bookmark.objects.get(id=bookmark2.id).web_archive)
+        self.assertTrue(Bookmark.objects.get(id=bookmark3.id).web_archive)
 
-    def test_bulk_refresh_web_archive_respects_opt_in_flag(self):
+    def test_bulk_refresh_web_archive_respects_web_archive_flag(self):
         user = self.get_or_create_test_user()
         user.profile.web_archive_integration = "enabled"
         user.profile.save()
 
-        opt_ins = self.setup_numbered_bookmarks(3, web_archive_opt_in=True)
-        opt_outs = self.setup_numbered_bookmarks(2, web_archive_opt_in=False)
+        opt_ins = self.setup_numbered_bookmarks(3, web_archive=True)
+        opt_outs = self.setup_numbered_bookmarks(2, web_archive=False)
         bookmarks = opt_ins + opt_outs
 
         with patch.object(
@@ -894,7 +894,7 @@ class BookmarkActionViewTestCase(
 
         other_user = self.setup_user(web_archive_integration="enabled")
         bookmarks = self.setup_numbered_bookmarks(
-            3, web_archive_opt_in=True, user=other_user
+            3, web_archive=True, user=other_user
         )
 
         with patch.object(
