@@ -16,7 +16,7 @@ def create_bookmark(
     disable_html_snapshot: bool = False,
 ):
     # If URL is already bookmarked, then update it
-    existing_bookmark: Bookmark = Bookmark.query_existing(
+    existing_bookmark: Bookmark | None = Bookmark.query_existing(
         current_user, bookmark.url
     ).first()
 
