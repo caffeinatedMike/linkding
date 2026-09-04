@@ -109,8 +109,7 @@ class BookmarkForm(forms.ModelForm):
         url = self.cleaned_data["url"]
         if self.instance.pk:
             is_duplicate = (
-                Bookmark
-                .query_existing(self.instance.owner, url)
+                Bookmark.query_existing(self.instance.owner, url)
                 .exclude(pk=self.instance.pk)
                 .exists()
             )

@@ -167,15 +167,14 @@ class BookmarkSerializer(serializers.ModelSerializer):
         # the URL is a duplicate, so raise a validation error in that case.
         if self.instance and "url" in attrs:
             is_duplicate = (
-                Bookmark.objects
-                .filter(owner=self.instance.owner, url=attrs["url"])
+                Bookmark.objects.filter(owner=self.instance.owner, url=attrs["url"])
                 .exclude(pk=self.instance.pk)
                 .exists()
             )
             if is_duplicate:
-                raise serializers.ValidationError({
-                    "url": "A bookmark with this URL already exists."
-                })
+                raise serializers.ValidationError(
+                    {"url": "A bookmark with this URL already exists."}
+                )
 
         return attrs
 
