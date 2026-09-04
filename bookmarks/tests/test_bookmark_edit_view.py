@@ -130,7 +130,7 @@ class BookmarkEditViewTestCase(TestCase, BookmarkFactoryMixin):
 
         self.assertInHTML(
             f"""
-            <input type="text" name="title" value="{bookmark.title}" maxlength="512" autocomplete="off" 
+            <input type="text" name="title" value="{bookmark.title}" maxlength="512" autocomplete="off"
                     class="form-input" id="id_title">
         """,
             html,
@@ -306,7 +306,7 @@ class BookmarkEditViewTestCase(TestCase, BookmarkFactoryMixin):
             count=1,
         )
 
-    def test_should_respect_web_archive_integration_profile_setting(self):
+    def test_should_respect_enable_web_archiving_profile_setting(self):
         bookmark = self.setup_bookmark()
 
         # profile setting defaults to disabled
@@ -327,26 +327,7 @@ class BookmarkEditViewTestCase(TestCase, BookmarkFactoryMixin):
             count=0,
         )
 
-        self.user.profile.web_archive_integration = "opt_in"
-        self.user.profile.save()
-        response = self.client.get(
-            reverse("linkding:bookmarks.edit", args=[bookmark.id])
-        )
-        html = response.content.decode()
-
-        self.assertInHTML(
-            """
-            <div class="form-checkbox">
-                <input type="checkbox" name="web_archive" aria-describedby="id_web_archive_help" id="id_web_archive">
-                <i class="form-icon"></i>
-                <label for="id_web_archive">Preserve online</label>
-            </div>
-            """,
-            html,
-            count=1,
-        )
-
-        self.user.profile.web_archive_integration = "enabled"
+        self.user.profile.enable_web_archiving = True
         self.user.profile.save()
         response = self.client.get(
             reverse("linkding:bookmarks.edit", args=[bookmark.id])

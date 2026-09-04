@@ -23,7 +23,7 @@ class BookmarkIndexViewTestCase(
         html = response.content.decode()
         self.assertInHTML(
             f"""
-            <a href="{url}">Edit</a>        
+            <a href="{url}">Edit</a>
         """,
             html,
         )
@@ -363,7 +363,7 @@ class BookmarkIndexViewTestCase(
 
     def test_allowed_bulk_actions_with_web_archive_enabled(self):
         user_profile = self.user.profile
-        user_profile.web_archive_integration = "enabled"
+        user_profile.enable_web_archiving = True
         user_profile.save()
 
         url = reverse("linkding:bookmarks.index")
@@ -381,7 +381,7 @@ class BookmarkIndexViewTestCase(
             <option value="bulk_unread">Mark as unread</option>
             <option value="bulk_enable_web_archive">Enable web archive</option>
             <option value="bulk_disable_web_archive">Disable web archive</option>
-            <option value="bulk_refresh_web_archive">Refresh web archive</option>
+            <option value="bulk_refresh_web_archive_snapshot">Refresh web archive</option>
             <option value="bulk_refresh">Refresh from website</option>
           </select>
         """,

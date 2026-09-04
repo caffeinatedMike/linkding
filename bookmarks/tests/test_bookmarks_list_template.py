@@ -26,8 +26,8 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
         self.assertInHTML(
             f"""
             {favicon_img}
-            <a href="{bookmark.url}" 
-                target="{link_target}" 
+            <a href="{bookmark.url}"
+                target="{link_target}"
                 rel="noopener">
                 <span>{bookmark.resolved_title}</span>
             </a>
@@ -123,7 +123,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
         # Shared by link
         self.assertInHTML(
             f"""
-            <span>Shared by 
+            <span>Shared by
                 <a href="?user={bookmark.owner.username}">{bookmark.owner.username}</a>
             </span>
         """,
@@ -179,7 +179,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
         self.assertInHTML(
             f"""
         <div class="url-path truncate">
-          <a href="{bookmark.url}" target="{link_target}" rel="noopener" 
+          <a href="{bookmark.url}" target="{link_target}" rel="noopener"
           class="url-display">
             {bookmark.url}
           </a>
@@ -218,7 +218,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
             <use href="/static/icons.svg?v={app_version}#note"></use>
           </svg>
           Notes
-        </button>      
+        </button>
           """,
             html,
             count=count,
@@ -234,7 +234,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
             <use href="/static/icons.svg?v={app_version}#share"></use>
           </svg>
           Shared
-        </button>    
+        </button>
           """,
             html,
             count=count,
@@ -250,7 +250,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
             <use href="/static/icons.svg?v={app_version}#unread"></use>
           </svg>
           Unread
-        </button>   
+        </button>
           """,
             html,
             count=count,
@@ -500,7 +500,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
 
     def test_should_render_web_archive_link_with_absolute_date_setting(self):
         user = self.get_or_create_test_user()
-        user.profile.web_archive_integration = "enabled"
+        user.profile.enable_web_archiving = True
         user.profile.save()
 
         bookmark = self.setup_date_format_test(
@@ -517,7 +517,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
 
     def test_should_render_web_archive_link_with_relative_date_setting(self):
         user = self.get_or_create_test_user()
-        user.profile.web_archive_integration = "enabled"
+        user.profile.enable_web_archiving = True
         user.profile.save()
 
         bookmark = self.setup_date_format_test(
@@ -532,7 +532,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
     def test_should_render_generated_web_archive_link_without_saved_snapshot_url(self):
         user = self.get_or_create_test_user()
         user.profile.bookmark_date_display = UserProfile.BOOKMARK_DATE_DISPLAY_ABSOLUTE
-        user.profile.web_archive_integration = "enabled"
+        user.profile.enable_web_archiving = True
         user.profile.save()
 
         date_added = timezone.datetime(2023, 8, 11, 21, 45, 11, tzinfo=datetime.UTC)
@@ -567,7 +567,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
 
     def test_web_archive_link_target_should_be_blank_by_default(self):
         profile = self.get_or_create_test_user().profile
-        profile.web_archive_integration = "enabled"
+        profile.enable_web_archiving = True
         profile.save()
         bookmark = self.setup_bookmark(web_archive=True)
         bookmark.date_added = timezone.now() - datetime.timedelta(days=8)
@@ -582,7 +582,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
 
     def test_web_archive_link_target_should_respect_user_profile(self):
         profile = self.get_or_create_test_user().profile
-        profile.web_archive_integration = "enabled"
+        profile.enable_web_archiving = True
         profile.bookmark_link_target = UserProfile.BOOKMARK_LINK_TARGET_SELF
         profile.save()
 
@@ -743,7 +743,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
 
         self.assertInHTML(
             f"""
-            <span>Shared by 
+            <span>Shared by
                 <a href="?q=foo&user={bookmark.owner.username}">{bookmark.owner.username}</a>
             </span>
         """,
@@ -1048,7 +1048,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
         profile = self.get_or_create_test_user().profile
         profile.enable_sharing = True
         profile.enable_public_sharing = True
-        profile.web_archive_integration = "enabled"
+        profile.enable_web_archiving = True
         profile.save()
 
         bookmark = self.setup_bookmark(web_archive=True)
@@ -1154,7 +1154,7 @@ class BookmarkListTemplateTest(TestCase, BookmarkFactoryMixin, HtmlTestMixin):
     def test_no_actions_rendered_when_is_preview(self):
         user = self.get_or_create_test_user()
         profile = user.profile
-        profile.web_archive_integration = "enabled"
+        profile.enable_web_archiving = True
         profile.save()
 
         bookmark = self.setup_bookmark(web_archive=True)

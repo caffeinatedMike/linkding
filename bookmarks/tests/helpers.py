@@ -279,14 +279,14 @@ class BookmarkFactoryMixin:
         name: str = None,
         enable_sharing: bool = False,
         enable_public_sharing: bool = False,
-        web_archive_integration: str = "disabled",
+        enable_web_archiving: bool = False,
     ):
         if not name:
             name = get_random_string(length=32)
         user = User.objects.create_user(name, "user@example.com", "password123")
         user.profile.enable_sharing = enable_sharing
         user.profile.enable_public_sharing = enable_public_sharing
-        user.profile.web_archive_integration = web_archive_integration
+        user.profile.enable_web_archiving = enable_web_archiving
         user.profile.save()
         return user
 

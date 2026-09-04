@@ -6,7 +6,7 @@ from django.test import TestCase, override_settings
 from huey.contrib.djhuey import HUEY as huey
 from waybackpy.exceptions import WaybackError
 
-from bookmarks.models import BookmarkAsset, UserProfile
+from bookmarks.models import BookmarkAsset
 from bookmarks.services import tasks
 from bookmarks.services.website_loader import WebsiteMetadata
 from bookmarks.tests.helpers import BookmarkFactoryMixin
@@ -58,9 +58,7 @@ class BookmarkTasksTestCase(TestCase, BookmarkFactoryMixin):
         self.mock_load_preview_image.return_value = "preview_image.png"
 
         user = self.get_or_create_test_user()
-        user.profile.web_archive_integration = (
-            UserProfile.WEB_ARCHIVE_INTEGRATION_ENABLED
-        )
+        user.profile.enable_web_archiving = True
         user.profile.enable_favicons = True
         user.profile.enable_preview_images = True
         user.profile.save()
@@ -148,9 +146,7 @@ class BookmarkTasksTestCase(TestCase, BookmarkFactoryMixin):
     def test_create_web_archive_snapshot_should_not_run_when_web_archive_integration_is_disabled(
         self,
     ):
-        self.user.profile.web_archive_integration = (
-            UserProfile.WEB_ARCHIVE_INTEGRATION_DISABLED
-        )
+        self.user.profile.enable_web_archiving = False
         self.user.profile.save()
 
         bookmark = self.setup_bookmark(web_archive=True)

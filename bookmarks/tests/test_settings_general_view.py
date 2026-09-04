@@ -28,7 +28,7 @@ class SettingsGeneralViewTestCase(TestCase, BookmarkFactoryMixin):
             "bookmark_description_display": UserProfile.BOOKMARK_DESCRIPTION_DISPLAY_INLINE,
             "bookmark_description_max_lines": 1,
             "bookmark_link_target": UserProfile.BOOKMARK_LINK_TARGET_BLANK,
-            "web_archive_integration": UserProfile.WEB_ARCHIVE_INTEGRATION_DISABLED,
+            "enable_web_archiving": False,
             "enable_sharing": False,
             "enable_public_sharing": False,
             "enable_favicons": False,
@@ -100,7 +100,7 @@ class SettingsGeneralViewTestCase(TestCase, BookmarkFactoryMixin):
             "bookmark_description_display": UserProfile.BOOKMARK_DESCRIPTION_DISPLAY_SEPARATE,
             "bookmark_description_max_lines": 3,
             "bookmark_link_target": UserProfile.BOOKMARK_LINK_TARGET_SELF,
-            "web_archive_integration": UserProfile.WEB_ARCHIVE_INTEGRATION_ENABLED,
+            "enable_web_archiving": True,
             "enable_sharing": True,
             "enable_public_sharing": True,
             "enable_favicons": True,
@@ -148,8 +148,8 @@ class SettingsGeneralViewTestCase(TestCase, BookmarkFactoryMixin):
             self.user.profile.bookmark_link_target, form_data["bookmark_link_target"]
         )
         self.assertEqual(
-            self.user.profile.web_archive_integration,
-            form_data["web_archive_integration"],
+            self.user.profile.enable_web_archiving,
+            form_data["enable_web_archiving"],
         )
         self.assertEqual(self.user.profile.enable_sharing, form_data["enable_sharing"])
         self.assertEqual(
@@ -233,11 +233,9 @@ class SettingsGeneralViewTestCase(TestCase, BookmarkFactoryMixin):
         self.assertSuccessMessage(html, "Profile updated", count=0)
 
     def test_update_profile_updates_custom_css_hash(self):
-        form_data = self.create_profile_form_data(
-            {
-                "custom_css": "body { background-color: #000; }",
-            }
-        )
+        form_data = self.create_profile_form_data({
+            "custom_css": "body { background-color: #000; }",
+        })
         self.client.post(reverse("linkding:settings.update"), form_data, follow=True)
         self.user.profile.refresh_from_db()
 
@@ -262,11 +260,9 @@ class SettingsGeneralViewTestCase(TestCase, BookmarkFactoryMixin):
             tasks, "schedule_bookmarks_without_favicons"
         ) as mock_schedule_bookmarks_without_favicons:
             # Enabling favicons schedules update
-            form_data = self.create_profile_form_data(
-                {
-                    "enable_favicons": True,
-                }
-            )
+            form_data = self.create_profile_form_data({
+                "enable_favicons": True,
+            })
             self.client.post(reverse("linkding:settings.update"), form_data)
 
             mock_schedule_bookmarks_without_favicons.assert_called_once_with(self.user)
@@ -279,11 +275,9 @@ class SettingsGeneralViewTestCase(TestCase, BookmarkFactoryMixin):
             mock_schedule_bookmarks_without_favicons.assert_not_called()
 
             # No update scheduled when disabling favicons
-            form_data = self.create_profile_form_data(
-                {
-                    "enable_favicons": False,
-                }
-            )
+            form_data = self.create_profile_form_data({
+                "enable_favicons": False,
+            })
 
             self.client.post(reverse("linkding:settings.update"), form_data)
 
@@ -375,11 +369,9 @@ class SettingsGeneralViewTestCase(TestCase, BookmarkFactoryMixin):
             tasks, "schedule_bookmarks_without_previews"
         ) as mock_schedule_bookmarks_without_previews:
             # Enabling favicons schedules update
-            form_data = self.create_profile_form_data(
-                {
-                    "enable_preview_images": True,
-                }
-            )
+            form_data = self.create_profile_form_data({
+                "enable_preview_images": True,
+            })
             self.client.post(reverse("linkding:settings.update"), form_data)
 
             mock_schedule_bookmarks_without_previews.assert_called_once_with(self.user)
@@ -392,11 +384,9 @@ class SettingsGeneralViewTestCase(TestCase, BookmarkFactoryMixin):
             mock_schedule_bookmarks_without_previews.assert_not_called()
 
             # No update scheduled when disabling favicons
-            form_data = self.create_profile_form_data(
-                {
-                    "enable_preview_images": False,
-                }
-            )
+            form_data = self.create_profile_form_data({
+                "enable_preview_images": False,
+            })
 
             self.client.post(reverse("linkding:settings.update"), form_data)
 

@@ -862,7 +862,7 @@ class BookmarkActionViewTestCase(
 
     def test_bulk_refresh_web_archive_respects_web_archive_flag(self):
         user = self.get_or_create_test_user()
-        user.profile.web_archive_integration = "enabled"
+        user.profile.enable_web_archiving = True
         user.profile.save()
 
         opt_ins = self.setup_numbered_bookmarks(3, web_archive=True)
@@ -875,7 +875,7 @@ class BookmarkActionViewTestCase(
             self.client.post(
                 reverse("linkding:bookmarks.index.action"),
                 {
-                    "bulk_action": ["bulk_refresh_web_archive"],
+                    "bulk_action": ["bulk_refresh_web_archive_snapshot"],
                     "bulk_execute": [""],
                     "bookmark_id": [str(b.id) for b in bookmarks],
                 },
@@ -889,10 +889,10 @@ class BookmarkActionViewTestCase(
 
     def test_can_only_refresh_web_archive_for_own_bookmarks(self):
         user = self.get_or_create_test_user()
-        user.profile.web_archive_integration = "enabled"
+        user.profile.enable_web_archiving = True
         user.profile.save()
 
-        other_user = self.setup_user(web_archive_integration="enabled")
+        other_user = self.setup_user(enable_web_archiving=True)
         bookmarks = self.setup_numbered_bookmarks(3, web_archive=True, user=other_user)
 
         with patch.object(
@@ -901,7 +901,7 @@ class BookmarkActionViewTestCase(
             self.client.post(
                 reverse("linkding:bookmarks.index.action"),
                 {
-                    "bulk_action": ["bulk_refresh_web_archive"],
+                    "bulk_action": ["bulk_refresh_web_archive_snapshot"],
                     "bulk_execute": [""],
                     "bookmark_id": [str(b.id) for b in bookmarks],
                 },

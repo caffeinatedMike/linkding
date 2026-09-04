@@ -225,7 +225,7 @@ class BookmarkDetailsModalTestCase(TestCase, BookmarkFactoryMixin, HtmlTestMixin
     def test_internet_archive_link_with_snapshot_url(self):
         user = self.get_or_create_test_user()
         profile = user.profile
-        profile.web_archive_integration = "enabled"
+        profile.enable_web_archiving = True
         profile.save()
 
         bookmark = self.setup_bookmark(
@@ -276,7 +276,7 @@ class BookmarkDetailsModalTestCase(TestCase, BookmarkFactoryMixin, HtmlTestMixin
     def test_internet_archive_link_with_fallback_url(self):
         user = self.get_or_create_test_user()
         profile = user.profile
-        profile.web_archive_integration = "enabled"
+        profile.enable_web_archiving = True
         profile.save()
 
         date_added = timezone.datetime(2023, 8, 11, 21, 45, 11, tzinfo=datetime.UTC)
@@ -295,7 +295,7 @@ class BookmarkDetailsModalTestCase(TestCase, BookmarkFactoryMixin, HtmlTestMixin
 
     def test_weblinks_respect_target_setting(self):
         profile = self.get_or_create_test_user().profile
-        profile.web_archive_integration = "enabled"
+        profile.enable_web_archiving = True
         # target blank
         profile.bookmark_link_target = UserProfile.BOOKMARK_LINK_TARGET_BLANK
         profile.save()

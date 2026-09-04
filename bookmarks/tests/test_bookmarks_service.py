@@ -172,7 +172,7 @@ class BookmarkServiceTestCase(TestCase, BookmarkFactoryMixin):
 
     def test_create_should_create_web_archive_snapshot(self):
         profile = self.get_or_create_test_user().profile
-        profile.web_archive_integration = "enabled"
+        profile.enable_web_archiving = True
         profile.save()
 
         with patch.object(
@@ -275,7 +275,7 @@ class BookmarkServiceTestCase(TestCase, BookmarkFactoryMixin):
 
     def test_update_should_create_web_archive_snapshot_if_url_did_change(self):
         profile = self.get_or_create_test_user().profile
-        profile.web_archive_integration = "enabled"
+        profile.enable_web_archiving = True
         profile.save()
 
         with patch.object(
