@@ -11,7 +11,7 @@ from huey.contrib.djhuey import HUEY as huey
 from huey.exceptions import TaskLockedException
 from waybackpy.exceptions import TooManyRequestsError, WaybackError
 
-from bookmarks.models import Bookmark, BookmarkAsset, UserProfile
+from bookmarks.models import Bookmark, BookmarkAsset
 from bookmarks.services import assets, favicon_loader, preview_image_loader
 from bookmarks.services.website_loader import DEFAULT_USER_AGENT, load_website_metadata
 
@@ -50,7 +50,7 @@ def task(retries=5, retry_delay=15, retry_backoff=4):
 def is_web_archive_integration_active(user: User) -> bool:
     background_tasks_enabled = not settings.LD_DISABLE_BACKGROUND_TASKS
 
-    return background_tasks_enabled and user.profile.web_archive_integration_active
+    return background_tasks_enabled and user.profile.enable_web_archiving
 
 
 def create_web_archive_snapshot(user: User, bookmark: Bookmark, force_update: bool):

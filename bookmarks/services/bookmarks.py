@@ -211,7 +211,9 @@ def disable_bookmarks_web_archive(bookmark_ids: list[int | str], current_user: U
     )
 
 
-def refresh_bookmarks_web_archive(bookmark_ids: list[int | str], current_user: User):
+def refresh_bookmarks_web_archive_snapshot(
+    bookmark_ids: list[int | str], current_user: User
+):
     sanitized_bookmark_ids = _sanitize_id_list(bookmark_ids)
     # Respect the flag to avoid accidentally sending opt-outs
     owned_bookmarks = Bookmark.objects.filter(

@@ -84,14 +84,14 @@
                 </label>
               </div>
             {% endif %}
-            {% if details.profile.web_archive_integration_active %}
+            {% if details.profile.enable_web_archiving %}
               <div class="form-group">
                 <label class="form-checkbox" title="Save this page to the Internet Archive (Wayback Machine)">
                   <input data-submit-on-change
                          type="checkbox"
                          name="web_archive"
                          {% if details.bookmark.web_archive %}checked{% endif %}>
-                  <i class="form-icon"></i> Preserved online
+                  <i class="form-icon"></i> Preserve online
                 </label>
               </div>
             {% endif %}
